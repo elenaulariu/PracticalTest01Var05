@@ -1,7 +1,12 @@
 package ro.pub.cs.systems.eim.practicaltest01var05;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,16 +21,27 @@ import androidx.core.view.WindowInsetsCompat;
 public class PracticalTest01Var05MainActivity extends AppCompatActivity {
 
     private Button navigateToSecondaryActivityButton;
+    private IntentFilter intentFilter= new IntentFilter();
     private Button topLeftButton;
     private Button topRightButton;
     private Button bottomLeftButton;
     private Button bottomRightButton;
     private Button centerButton;
+    private int serviceStatus =0;
 
     private TextView textView;
 
     private int buttons_pressed = 0;
 
+    private MessageBroadcastReceiver messageBroadcastReceiver = new MessageBroadcastReceiver();
+
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("[SERVICE]", intent.getStringExtra("message"));
+        }
+    }
     private ButtonClickListener buttonClickListener = new ButtonClickListener();
     private class ButtonClickListener implements View.OnClickListener {
         @Override
@@ -75,6 +91,13 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
                 intent.putExtra(Constants.TextView, istoric);
                 startActivityForResult(intent, Constants.REQUEST_CODE);
             }
+            if (buttons_pressed >= 5 && serviceStatus == 0){
+                Log.d("DA", "AM Intrat sa pornim serviciul");
+                Intent intent = new Intent(getApplicationContext(), PracticalTest01Var05Service.class);
+                intent.putExtra(Constants.TextView, textView.getText().toString());
+                getApplicationContext().startService(intent);
+                serviceStatus = 1;
+            }
         }
     }
 
@@ -120,4 +143,30 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
         navigateToSecondaryActivityButton.setOnClickListener(buttonClickListener);
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(messageBroadcastReceiver, intentFilter, RECEIVER_EXPORTED);
+        }
+        else {
+            registerReceiver(messageBroadcastReceiver, intentFilter);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(messageBroadcastReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this, PracticalTest01Var05Service.class);
+        stopService(intent);
+        serviceStatus = 0;
+        super.onDestroy();
+
+    }
+
 }
