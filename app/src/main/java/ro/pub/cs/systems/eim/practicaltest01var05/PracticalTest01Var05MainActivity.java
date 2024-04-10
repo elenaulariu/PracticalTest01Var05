@@ -1,5 +1,6 @@
 package ro.pub.cs.systems.eim.practicaltest01var05;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class PracticalTest01Var05MainActivity extends AppCompatActivity {
 
-    private Button naviateToSecondaryActivityButton;
+    private Button navigateToSecondaryActivityButton;
     private Button topLeftButton;
     private Button topRightButton;
     private Button bottomLeftButton;
@@ -68,9 +69,22 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
                 }
                 buttons_pressed++;
             }
+            else if(view.getId()==R.id.navigate_to_second_activity_button) {
+                Intent intent = new Intent(getApplicationContext(), PracticalTest01Var05SecondaryActivity.class);
+                String istoric = textView.getText().toString();
+                intent.putExtra(Constants.TextView, istoric);
+                startActivityForResult(intent, Constants.REQUEST_CODE);
+            }
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == Constants.REQUEST_CODE) {
+            Toast.makeText(this, "The activity returned with result " + resultCode, Toast.LENGTH_LONG).show();
+        }
+    }
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -90,7 +104,7 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practical_test01_var05_main);
-        naviateToSecondaryActivityButton = findViewById(R.id.navigate_to_second_activity_button);
+        navigateToSecondaryActivityButton = findViewById(R.id.navigate_to_second_activity_button);
         topLeftButton = findViewById(R.id.top_left_button);
         topRightButton = findViewById(R.id.top_right_button);
         bottomLeftButton = findViewById(R.id.bottom_left_button);
@@ -102,5 +116,8 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
         bottomLeftButton.setOnClickListener(buttonClickListener);
         bottomRightButton.setOnClickListener(buttonClickListener);
         centerButton.setOnClickListener(buttonClickListener);
+        navigateToSecondaryActivityButton = (Button)findViewById(R.id.navigate_to_second_activity_button);
+        navigateToSecondaryActivityButton.setOnClickListener(buttonClickListener);
+
     }
 }
