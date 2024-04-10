@@ -101,6 +101,6 @@ public class PracticalTest01Var05MainActivity extends AppCompatActivity {
         topRightButton.setOnClickListener(buttonClickListener);
         bottomLeftButton.setOnClickListener(buttonClickListener);
         bottomRightButton.setOnClickListener(buttonClickListener);
-        centerButton.setOnClickListener(buttonClickListener);
+        centerButon.setOnClickListener(buttonClickListener);
     }
 }
